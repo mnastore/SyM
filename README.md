@@ -1,2 +1,2 @@
-# SyM
+# MNA
 Página de mi Emprendimiento
