@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SyM</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+}
+
+/* Barra superior */
+.topbar {
+    width: 100%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.topbar img.logo {
+    height: 50px;
+    margin-left: 15px;
+}
+
+.topbar .right-icons {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.topbar .search-container {
+    display: flex;
+    align-items: center;
+    background-color: #eee;
+    border-radius: 20px;
+    padding: 5px 10px;
+    display: none;
+    margin-right: 10px;
+}
+
+.topbar .search-container input {
+    border: none;
+    outline: none;
+    background: transparent;
+    margin-left: 5px;
+    width: 150px;
+}
+
+.topbar .search-icon {
+    cursor: pointer;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.topbar .hamburger {
+    width: 20px;
+    height: 15px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.topbar .hamburger div {
+    height: 3px;
+    background-color: #000;
+    border-radius: 2px;
+}
+
+/* Menú lateral */
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #fff;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    z-index: 1001;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.sidenav a {
+    padding: 10px 30px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #000;
+    display: block;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.sidenav a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Contenido */
+.content {
+    padding: 70px 15px 20px 15px;
+    text-align: center;
+}
+
+.content h1 {
+    margin-bottom: 60px; /* un poco más abajo de la barra */
+    font-size: 18px;
+}
+
+/* Productos */
+.product {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+#productos {
+    display: grid;
+    grid-template-columns: 1fr; /* celular: 1 producto por fila */
+    gap: 20px;
+}
+
+/* Tablet: 2 productos por fila */
+@media (min-width: 600px) {
+    #productos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* PC: 3 productos por fila */
+@media (min-width: 900px) {
+    #productos {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+.product img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.product h3 {
+    margin: 10px 0 5px 0;
+    font-size: 16px;
+}
+
+.product p {
+    color: #007bff;
+    font-weight: bold;
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.product button {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.product button:hover {
+    background-color: #218838;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    margin-top: 30px;
+    color: #555;
+    font-size: 14px;
+}
+/* Ajuste solo para PC */
+@media screen and (min-width: 1024px) {
+  .content {
+    padding-top: 130px;
+  }
+}
+/* SOLO PC */
+@media screen and (min-width: 769px) {
+
+  .search-icon {
+    font-size: 30px;
+  }
+
+  .menu-icon {
+    font-size: 32px;
+  }
+
+}
+/* SOLO PC: buscador más largo */
+@media screen and (min-width: 769px) {
+
+  .topbar .search-container {
+    width: 1100px;
+  }
+
+  .topbar .search-container input {
+    width: 100%;
+  }
+
+}
+</style>
+</head>
+<body>
+
+<!-- Barra superior -->
+<div class="topbar">
+    <img src="logo.png" alt="SyM Logo" class="logo">
+    <div class="right-icons">
+        <div class="search-container" id="searchContainer">
+            <span>&#128269;</span>
+            <input type="text" placeholder="Buscar Productos..." id="searchInput">
+        </div>
+        <span class="search-icon" id="searchIcon">&#128269;</span>
+        <div class="hamburger" id="hamburger">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Menú lateral -->
+<div id="sidenav" class="sidenav">
+    <span class="closebtn" id="closeSidenav">&times;</span>
+    <a onclick="scrollToSection('top')">Inicio</a>
+    <a onclick="scrollToSection('productos')">Productos</a>
+    <a onclick="scrollToSection('contacto')">Contacto</a>
+</div>
+
+<!-- Contenido principal -->
+<div class="content" id="top">
+    <h1>Productos De Tecnología, Hogar Y Belleza</h1>
+
+    <div id="productos">
+        <!-- Productos en orden -->
+        <div class="product" data-name="TV Box 8K UltraHD">
+            <img src="tvbox.jpg" alt="TV Box 8K UltraHD">
+            <h3>TV Box 8K UltraHD</h3>
+            <p>$38.000</p>
+            <button onclick="openWhatsApp('TV Box 8K UltraHD')">Comprar por WhatsApp</button>
+        </div>
+
+        <div class="product" data-name="Reloj Inteligente">
+            <img src="reloj.jpg" alt="Reloj Inteligente">
+            <h3>Reloj Inteligente</h3>
+            <p>$18.000</p>
+            <button onclick="openWhatsApp('Reloj Inteligente')">Comprar por WhatsApp</button>
+        </div>
+
+        <div class="product" data-name="Auricular Gatito P47">
+            <img src="auriculargatito.jpg" alt="Auricular Gatito P47">
+            <h3>Auricular Gatito P47</h3>
+            <p>$17.000</p>
+            <button onclick="openWhatsApp('Auricular Gatito P47')">Comprar por WhatsApp</button>
+        </div>
+        
+        <div class="product" data-name="Auricular P47">
+            <img src="p47.jpg" alt="Auricular P47">
+            <h3>Auricular P47</h3>
+            <p>$16.000</p>
+            <button onclick="openWhatsApp('Auricular P47')">Comprar por WhatsApp</button>
+        </div>
+
+        <!-- Resto de productos se agregan igual -->
+        <div class="product" data-name="Auricular P9">
+            <img src="auricularp9.png" alt="Auricular P9">
+            <h3>Auricular P9</h3>
+            <p>$16.000</p>
+            <button onclick="openWhatsApp('Auricular P9')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Altavoz Bluetooth de 3&quot;">
+            <img src="altavoz3.jpg" alt="Altavoz Bluetooth de 3&quot;">
+            <h3>Altavoz Bluetooth de 3"</h3>
+            <p>$16.000</p>
+            <button onclick="openWhatsApp('Altavoz Bluetooth de 3&quot;')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="AirPods I12">
+            <img src="i12.png" alt="AirPods I12">
+            <h3>AirPods I12</h3>
+            <p>$15.000</p>
+            <button onclick="openWhatsApp('AirPods I12')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Fundas Transparentes">
+            <img src="fundas.jpg" alt="Fundas Transparentes">
+            <h3>Fundas Transparentes</h3>
+            <p>$7.000</p>
+            <button onclick="openWhatsApp('Fundas Transparentes')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Termo 3 en 1">
+            <img src="termo3.jpg" alt="Termo 3 en 1">
+            <h3>Termo 3 en 1</h3>
+            <p>$35.000</p>
+            <button onclick="openWhatsApp('Termo 3 en 1')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Botella deportiva">
+            <img src="botella.jpg" alt="Botella deportiva">
+            <h3>Botella deportiva</h3>
+            <p>$20.000</p>
+            <button onclick="openWhatsApp('Botella deportiva')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Espejo LED para Maquillaje">
+            <img src="espejo.png" alt="Espejo LED para Maquillaje">
+            <h3>Espejo LED para Maquillaje</h3>
+            <p>$15.000</p>
+            <button onclick="openWhatsApp('Espejo LED para Maquillaje')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Condimentero">
+            <img src="condimentero.jpg" alt="Condimentero">
+            <h3>Condimentero</h3>
+            <p>$13.000</p>
+            <button onclick="openWhatsApp('Condimentero')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Balanza Digital">
+            <img src="balanza.jpg" alt="Balanza Digital">
+            <h3>Balanza Digital</h3>
+            <p>$12.000</p>
+            <button onclick="openWhatsApp('Balanza Digital')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Miniplancha">
+            <img src="plancha.jpg" alt="Miniplancha">
+            <h3>Miniplancha</h3>
+            <p>$10.000</p>
+            <button onclick="openWhatsApp('Miniplancha')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Sérum Ácido Hialurónico">
+            <img src="serum.jpg" alt="Sérum Ácido Hialurónico">
+            <h3>Sérum Ácido Hialurónico</h3>
+            <p>$14.000</p>
+            <button onclick="openWhatsApp('Sérum Ácido Hialurónico')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Corrector líquido">
+            <img src="corrector.jpg" alt="Corrector líquido">
+            <h3>Corrector líquido</h3>
+            <p>$6.000</p>
+            <button onclick="openWhatsApp('Corrector líquido')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Delineador">
+            <img src="delineador.jpg" alt="Delineador">
+            <h3>Delineador</h3>
+            <p>$5.000</p>
+            <button onclick="openWhatsApp('Delineador')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Rubor en Polvo">
+            <img src="rubor.jpg" alt="Rubor en Polvo">
+            <h3>Rubor en Polvo</h3>
+            <p>$5.000</p>
+            <button onclick="openWhatsApp('Rubor en Polvo')">Comprar por WhatsApp</button>
+        </div>
+        <div class="product" data-name="Mascarilla">
+            <img src="mascarillas.jpg" alt="Mascarilla">
+            <h3>Mascarilla</h3>
+            <p>$3.000</p>
+            <button onclick="openWhatsApp('Mascarilla')">Comprar por WhatsApp</button>
+        </div>
+    </div>
+</div>
+<!-- Fila de información -->
+<div class="info-row">
+  <div class="info-column">
+    <h4>Medios de Pago</h4>
+    <div class="icons-row">
+      <img src="efectivo.png" alt="Efectivo">
+      <img src="mp.png" alt="Mercado Pago">
+    </div>
+  </div>
+  <div class="info-column">
+    <h4>Medios de Envío</h4>
+    <p>Puntos de Entrega</p>
+  </div>
+  <div class="info-column contacto">
+    <h4>Contacto</h4>
+    <p>+54 9 1138985673</p>
+  </div>
+</div>
+
+<style>
+/* Fila de 3 columnas */
+.info-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 15px;
+  margin: 20px 0 0 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.info-column {
+  flex: 0 0 auto;
+  min-width: 150px;
+  margin: 10px 0;
+}
+
+.info-column h4 {
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.icons-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.icons-row img {
+  height: 23px;
+  width: auto;
+}
+
+/* Responsive: en celular apilar columnas */
+@media screen and (max-width: 768px) {
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start; /* columnas alineadas a la izquierda */
+  }
+  .info-column {
+    width: 100%;
+    margin: 10px 0;
+  }
+}
+/* AJUSTE DE LAS 3 COLUMNAS (PC / escritorio) */
+@media screen and (min-width: 769px) {
+
+  /* Medios de Pago (izquierda) */
+  .info-row .info-column:nth-child(1) {
+    padding-left: 25px;   /* no tan pegado a la pared izquierda */
+  }
+
+  /* Medios de Envío (centro) */
+  .info-row .info-column:nth-child(2) {
+    text-align: center;   /* bien centrado */
+  }
+}
+
+/* Tamaño y separación de iconos (efectivo / MP) */
+.icons-row img {
+  height: 23px;
+  width: auto;
+}
+
+.icons-row {
+  gap: 6px; /* iconos más juntos */
+}
+
+.info-column.contacto {
+  text-align: left;
+  align-self: flex-start;
+}
+.info-column.contacto {
+  text-align: left;
+}
+
+/* Ajuste fino columnas en PC */
+@media screen and (min-width: 769px) {
+  .info-row .info-column {
+    padding-left: 35px;
+  }
+}
+/* Mejorar lectura en PC */
+@media screen and (min-width: 1024px) {
+  .info-column h4 {
+    font-size: 24px;   /* títulos más grandes */
+  }
+
+  .info-column p {
+    font-size: 17px;   /* texto más legible */
+  }
+
+  .icons-row img {
+    height: 38px;      /* iconos un poco más grandes */
+  }
+
+  .info-row {
+    padding: 25px 20px; /* más aire al bloque */
+  }
+}
+
+/* Mejorar lectura en PC: títulos, textos y iconos */
+@media screen and (min-width: 1024px) {
+  .info-column h4 {
+    font-size: 32px;   /* títulos más grandes */
+  }
+
+  .info-column p {
+    font-size: 17px;   /* textos (mail, WhatsApp, puntos de entrega) más grandes */
+  }
+
+  .icons-row img {
+    height: 38px;      /* iconos más grandes */
+  }
+
+  .info-row {
+    padding: 25px 20px; /* más aire al bloque */
+  }
+}
+/* Aumentar solo los textos debajo de los títulos en PC */
+@media screen and (min-width: 1024px) {
+  .info-column p {
+    font-size: 27px; /* más grande que antes */
+  }
+}
+/* Productos: títulos más grandes en PC */
+@media screen and (min-width: 1024px) {
+    .product h3 {
+        font-size: 30px; /* más grande en escritorio */
+    }
+}
+/* Ajustes de productos para PC */
+@media screen and (min-width: 1024px) {
+    .product h3 {
+        font-size: 30px; /* títulos más grandes */
+    }
+    .product p {
+        font-size: 24px; /* precio más grande */
+    }
+    .product button {
+        font-size: 23px; /* texto del botón más grande */
+        padding: 12px 20px; /* tamaño del botón más grande */
+    }
+}
+/* Ajustes de barra superior para PC */
+@media screen and (min-width: 1024px) {
+    .topbar img.logo {
+        height: 150px; /* logo más grande */
+    }
+    .topbar .hamburger {
+        width: 35px;  /* ancho de las 3 líneas */
+        height: 28px; /* alto del contenedor de líneas */
+    }
+    .topbar .hamburger div {
+        height: 4px; /* grosor de cada línea */
+    }
+    .topbar .search-icon {
+        font-size: 45px; /* tamaño de la lupa */
+    }
+    .topbar .search-container input {
+        width: 250px; /* barra de búsqueda más larga */
+        font-size: 40px; /* texto de búsqueda más grande */
+    }
+}
+.content h1 {
+    margin-top: 70px; /* espacio desde la barra superior */
+    margin-bottom: 60px; /* espacio debajo */
+    font-size: 24px; /* letra más grande */
+    text-align: center; /* centrado, si querés */
+}
+
+/* Opcional: más grande en PC */
+@media screen and (min-width: 1024px) {
+    .content h1 {
+        font-size: 40px;
+    }
+}
+.topbar .search-icon {
+    margin-right: 15px; /* separa la lupa de las 3 líneas */
+}
+@media screen and (min-width: 1024px) {
+    .sidenav a {
+        font-size: 30px; /* más grande en PC */
+    }
+}
+/* Footer más grande en pantallas grandes */
+@media screen and (min-width: 1024px) {
+    footer {
+        font-size: 24px; /* cambia este número para agrandar más si querés */
+    }
+}
+
+</style>
+<footer id="contacto">
+    © SyM 2026
+</footer>
+
+<script>
+// Abrir WhatsApp
+function openWhatsApp(producto){
+    const numero = "5491138985673";
+    const mensaje = encodeURIComponent(`Hola, quiero comprar: ${producto}`);
+    window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+}
+
+// Menú lateral
+const sidenav = document.getElementById("sidenav");
+const hamburger = document.getElementById("hamburger");
+const closeSidenav = document.getElementById("closeSidenav");
+
+hamburger.addEventListener("click", () => {
+    sidenav.style.width = "250px";
+});
+
+closeSidenav.addEventListener("click", () => {
+    sidenav.style.width = "0";
+});
+
+// Cerrar menú al tocar o desplazar fuera
+document.addEventListener("click", function(event) {
+    if (!sidenav.contains(event.target) && !hamburger.contains(event.target)) {
+        sidenav.style.width = "0";
+    }
+});
+document.addEventListener("touchmove", function(event) {
+    if (!sidenav.contains(event.target) && !hamburger.contains(event.target)) {
+        sidenav.style.width = "0";
+    }
+});
+
+// Scroll a secciones
+function scrollToSection(id){
+    let elem;
+    if(id==="top") elem = document.getElementById("top");
+    else if(id==="productos") elem = document.getElementById("productos");
+    else if(id==="contacto") elem = document.getElementById("contacto");
+    elem.scrollIntoView({behavior:"smooth"});
+    sidenav.style.width = "0";
+}
+
+// Lupa funcional y filtro
+const searchIcon = document.getElementById("searchIcon");
+const searchContainer = document.getElementById("searchContainer");
+const searchInput = document.getElementById("searchInput");
+
+searchIcon.addEventListener("click", () => {
+    if(searchContainer.style.display === "flex"){
+        searchContainer.style.display = "none";
+        searchInput.value = "";
+        filterProducts("");
+    } else {
+        searchContainer.style.display = "flex";
+        searchInput.focus();
+    }
+});
+
+searchInput.addEventListener("input", function(){
+    filterProducts(this.value);
+});
+
+function filterProducts(query){
+    query = query.toLowerCase();
+    const products = document.querySelectorAll('.product');
+    products.forEach(product => {
+        const name = product.getAttribute('data-name').toLowerCase();
+        product.style.display = name.includes(query) ? 'block' : 'none';
+    });
+}
+// Cerrar búsqueda al tocar o desplazar fuera
+document.addEventListener("click", function(event) {
+    if (!searchContainer.contains(event.target) && !searchIcon.contains(event.target)) {
+        searchContainer.style.display = "none";
+        searchInput.value = "";
+        filterProducts("");
+    }
+});
+
+document.addEventListener("touchmove", function(event) {
+    if (!searchContainer.contains(event.target) && !searchIcon.contains(event.target)) {
+        searchContainer.style.display = "none";
+        searchInput.value = "";
+        filterProducts("");
+    }
+});
+</script>
+</body>
+</html>
